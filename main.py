@@ -1,7 +1,7 @@
 import pandas as pd
 
 ####################################################################################################################################################
-dados = pd.read_csv('EOLBOEHPC_kmeans_model\\ObesityDataSet_raw_and_data_sinthetic.csv', sep = ',')
+dados = pd.read_csv('ObesityDataSet_raw_and_data_sinthetic.csv', sep = ',')
 print(dados.head(5))
 ####################################################################################################################################################
 dados_numericos = dados.drop(columns = ['Gender', 'family_history_with_overweight', 'FAVC', 'CAEC', 'SMOKE', 'SCC', 'CALC', 'MTRANS', 'NObeyesdad'])
