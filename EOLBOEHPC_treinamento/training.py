@@ -19,10 +19,11 @@ print(dados_categoricos_normalizados)
 ####################################################################################################################################################
 
 #Treinar o modelo normalizador para os dados numericos
+from pickle import dump
 from sklearn import preprocessing
 normalizador = preprocessing.MinMaxScaler() #?
 modelo_normalizador = normalizador.fit(dados_numericos)
-
+dump(modelo_normalizador, open('modelo_normalizador.pkl', 'wb'))
 ####################################################################################################################################################
 
 
