@@ -1,6 +1,7 @@
 import pandas as pd
 from pickle import load
 from sklearn.preprocessing import MinMaxScaler
+import numpy as np
 
 # Carregar o modelo de normalização e colunas categóricas
 EOLBOEHPC_kmeans_model = load(open('EOLBOEHPC_treinamento\\EOLBOEHPC_clusters_2024.pkl', 'rb'))
@@ -68,3 +69,15 @@ nova_instancia_final = nova_instancia_final.values
 
 print("Indice do grupo do novo entrevistado:",EOLBOEHPC_kmeans_model.predict([nova_instancia_final]))
 print("Centroide do entrevistado: ", EOLBOEHPC_kmeans_model.cluster_centers_[EOLBOEHPC_kmeans_model.predict([nova_instancia_final])])
+
+#obtendo dados numericos originais
+nova_instancia_numericos_desnormalizados = modelo_normalizador.inverse_transform(nova_instancia_numericos_normalizados)
+
+
+
+
+#print(nova_instancia_numericos_desnormalizados)
+
+#fazer sistema para obter dados desnormalizados categoricos novamente
+print(nova_instancia_categoricos)
+
