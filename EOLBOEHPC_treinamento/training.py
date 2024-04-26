@@ -41,7 +41,7 @@ dados_numericos_normalizados = modelo_normalizador.fit_transform(dados_numericos
 #criar um dataframe com os dados normalizados tanto categoricos e numericos
 #converter os dados numericos normalizados em dataframe
 
-dados_numericos_normalizados = pd.DataFrame(data = dados_numericos_normalizados, columns = ['Age', 'Height', 'Weight', 'FCVC', 'NCP', 'CH20', 'FAF', 'TUE'])
+dados_numericos_normalizados = pd.DataFrame(data = dados_numericos_normalizados, columns = ['Age', 'Height', 'Weight', 'FCVC', 'NCP', 'CH2O', 'FAF', 'TUE'])
 
 #juntar com os dados categoricos normalizados
 dados_normalizados_final = dados_numericos_normalizados.join(dados_categoricos_normalizados, how = 'left')
@@ -52,7 +52,7 @@ dados_normalizados_final = dados_numericos_normalizados.join(dados_categoricos_n
 dados_normalizados_final_legiveis = modelo_normalizador.inverse_transform(dados_numericos_normalizados)
 #print(dados_normalizados_final_legiveis)
 
-dados_normalizados_final_legiveis = pd.DataFrame(data = dados_normalizados_final_legiveis, columns = ['Age', 'Height', 'Weight', 'FCVC', 'NCP', 'CH20', 'FAF', 'TUE']).join(dados_categoricos_normalizados)
+dados_normalizados_final_legiveis = pd.DataFrame(data = dados_normalizados_final_legiveis, columns = ['Age', 'Height', 'Weight', 'FCVC', 'NCP', 'CH2O', 'FAF', 'TUE']).join(dados_categoricos_normalizados)
 pd.set_option('display.max_columns', None)
 print(dados_normalizados_final_legiveis)
 ####################################################################################################################################################
@@ -124,7 +124,7 @@ print(EOLBOEHPC_kmeans_model.cluster_centers_)
 nomes_colunas = dados_normalizados_final.columns.tolist()
 
 # Salvar os nomes das colunas em um arquivo CSV
-with open('EOLBOEHPC_treinamento\\EOLBOEHPC.csv', 'w') as file:
+with open('EOLBOEHPC_treinamento\\EOLBOEHPC.csv', 'w') as file: 
     file.write(','.join(nomes_colunas))
     
     

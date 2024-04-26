@@ -57,7 +57,6 @@ nova_instancia_categoricos_normalizados = pd.get_dummies(nova_instancia_categori
 nova_instancia_final = pd.DataFrame(data=nova_instancia_numericos_normalizados, columns=nova_instancia_numericos.columns).join(nova_instancia_categoricos_normalizados)
 
 
-
 # Troca colunas nulas por 0
 for column in nova_instancia_final.columns:
     if column in data_frame.columns:
@@ -68,23 +67,66 @@ pd.set_option('display.max_columns', None)
 
 
 #pega a primeira instancia da tabela
-nova_instancia_final = data_frame.iloc[0]
+nova_instancia_final_df = data_frame.iloc[0]
+
 #pega os valores da instancia (esquerda para direita)
-nova_instancia_final = nova_instancia_final.values
+nova_instancia_final_df = nova_instancia_final_df.values
 
 
 # nova instancia final em teoria deve estar com PRIMEIRO todos os valores numericos e então todos os valores categoricos
 
 
-print("Indice do grupo do novo entrevistado:",EOLBOEHPC_kmeans_model.predict([nova_instancia_final]))
-print("Centroide do entrevistado: ", EOLBOEHPC_kmeans_model.cluster_centers_[EOLBOEHPC_kmeans_model.predict([nova_instancia_final])])
+print("Indice do grupo do novo entrevistado:",EOLBOEHPC_kmeans_model.predict([nova_instancia_final_df]))
+print("Centroide do entrevistado: ", EOLBOEHPC_kmeans_model.cluster_centers_[EOLBOEHPC_kmeans_model.predict([nova_instancia_final_df])])
 
-centroid = pd.DataFrame(EOLBOEHPC_kmeans_model.cluster_centers_[EOLBOEHPC_kmeans_model.predict([nova_instancia_final])])
+centroid = pd.DataFrame(EOLBOEHPC_kmeans_model.cluster_centers_[EOLBOEHPC_kmeans_model.predict([nova_instancia_final_df])])
 
-print(centroid)
 
+
+
+
+
+
+
+
+
+
+print(centroid) #Possui 38 colunas, bate com a quantidade no EOLBOEHPC.csv
+print("Quantidade de colunas em centroid:", len(centroid.columns))
 
 #1. Atribuir os rótulos do arquivo de treinamento ao centroid
 #2. Segmentar o centroid em numéricos e categóricos
 #3. Centroid_numericos = aplicar o inverse transform
-#4. Centroid_categoricos = apliar o pd.from_dummies()
+#4. Centroid_categoricos = aplicar o pd.from_dummies()
+
+
+# Atribuir os rótulos do arquivo de treinamento ao centroid
+centroid.columns = columns 
+print(centroid)
+print("Quantidade de colunas em centroid:", len(centroid.columns))
+
+
+# Segmentar o centroid em numéricos e categóricos
+print("##############################################")
+centroid_colunas_numericas = centroid.drop(columns=nova_instancia_categoricos_normalizados)
+print(centroid_colunas_numericas)
+
+print("----------------------------------------------")
+
+centroid_colunas_categoricas = data_frame.drop(columns=nova_instancia_numericos.columns)
+print(centroid_colunas_categoricas)
+print("##############################################")
+
+#3. Centroid_numericos = aplicar o inverse transform
+
+
+#esta dando errado
+centroid_colunas_numericas_desnormalizadas = modelo_normalizador.inverse_transform(centroid_colunas_numericas)
+
+
+
+#4. Centroid_categoricos = aplicar o pd.from_dummies()
+
+
+centroid_colunas_categoricas_desnormalizadas = pd.from_dummies(centroid_colunas_categoricas, sep='_', default_category=None)
+print(centroid_colunas_categoricas_desnormalizadas)
