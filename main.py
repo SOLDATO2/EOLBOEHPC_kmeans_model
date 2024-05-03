@@ -36,31 +36,47 @@ nova_instancia_dict = {
 }
 
 # Convertendo para DataFrame
-nova_instancia_df = pd.DataFrame([nova_instancia_dict])
+nova_instancia_df = pd.DataFrame([nova_instancia_dict]) #Até aqui ele está inserindo os dados corretamente
+
 
 # Separar dados numéricos e categóricos
 nova_instancia_numericos = nova_instancia_df.drop(columns=['Gender', 'family_history_with_overweight', 'FAVC', 'CAEC', 'SMOKE', 'SCC', 'CALC', 'MTRANS', 'NObeyesdad'])
 nova_instancia_categoricos = nova_instancia_df[['Gender', 'family_history_with_overweight', 'FAVC', 'CAEC', 'SMOKE', 'SCC', 'CALC', 'MTRANS', 'NObeyesdad']]
 
+#print(nova_instancia_df)
+#print(nova_instancia_numericos) ###################dados categoricos possuem 8 colunas##############################
+#print(nova_instancia_categoricos)
+
 
 ############################
 ############################
 # Normalizar dados numéricos
-nova_instancia_numericos_normalizados = modelo_normalizador.transform(nova_instancia_numericos)
+nova_instancia_numericos_normalizados = modelo_normalizador.transform(nova_instancia_numericos) ##############continua tendo 8 elementos#############
+print(len(nova_instancia_numericos_normalizados[0]))
 # Aplicar one-hot encoding aos dados categóricos
-nova_instancia_categoricos_normalizados = pd.get_dummies(nova_instancia_categoricos, dtype=int)
+nova_instancia_categoricos_normalizados = pd.get_dummies(nova_instancia_categoricos, dtype=int) #Esta aplicando o get dummies corretamente
+print(len(nova_instancia_categoricos_normalizados.columns))
 ############################
 ############################
-
+pd.set_option('display.max_columns', None)
 # Juntar dados normalizados e codificados
 # Gera um unico dataframe com todas as tabelas, primeiro existem no pd df as tabelas numericas e entao sao inseridas as tabelas categoricas
-nova_instancia_final = pd.DataFrame(data=nova_instancia_numericos_normalizados, columns=nova_instancia_numericos.columns).join(nova_instancia_categoricos_normalizados)
+nova_instancia_final_normalizada_df = pd.DataFrame(data=nova_instancia_numericos_normalizados, columns=nova_instancia_numericos.columns).join(nova_instancia_categoricos_normalizados)
+print(len(nova_instancia_final_normalizada_df.columns)) #Possui 17 colunas, ou seja, está juntando corretamente os numericos com os categoricos
+print(nova_instancia_final_normalizada_df)
+
+################################################
+
+#O PROBLEMA ESTÁ AQUI, apos fazer o join em 'nova_instancia_final_normalizada_df', ainda falta as outras colunas dos dados
+#categricos que não foram incluidas apos o get dummies
+
+################################################
 
 
 # Troca colunas nulas por 0
-for column in nova_instancia_final.columns:
+for column in nova_instancia_final_normalizada_df.columns:
     if column in data_frame.columns:
-        data_frame.loc[0, column] = nova_instancia_final.loc[0, column]
+        data_frame.loc[0, column] = nova_instancia_final_normalizada_df.loc[0, column]
 data_frame = data_frame.fillna(0)
 pd.set_option('display.max_columns', None)
 
