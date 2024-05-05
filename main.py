@@ -3,6 +3,42 @@ from pickle import load
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
+import pandas as pd
+
+def undummify(df):
+    # Create an empty dictionary to store the undummified values
+    undummified_dict = {}
+    assigned_categories = set()  # Keep track of assigned categories
+    
+    for col in df.columns:
+        # Split the column name by underscores
+        parts = col.split("_")
+        
+        # Extract the original category name (all parts except the last one)
+        category_name = "_".join(parts[:-1])
+        
+        # Get the value (1 or 0) from the dummy-encoded column
+        value = df[col]
+        
+        # Check if the category name has already been assigned a value
+        if category_name not in assigned_categories:
+            if value[0] == 1:
+                undummified_value = parts[-1]
+                assigned_categories.add(category_name)  # Mark as assigned
+                undummified_dict[category_name] = undummified_value
+            else:
+                undummified_value = None  # Handle cases where value is 0
+                undummified_dict[category_name] = undummified_value
+        
+        # Store the undummified value in the dictionary
+
+    
+    # Create a new DataFrame from the dictionary
+    undummified_df = pd.DataFrame(undummified_dict, index=[0])
+    
+    return undummified_df
+
+
 # Carregar o modelo de normalização e colunas categóricas
 EOLBOEHPC_kmeans_model = load(open('EOLBOEHPC_treinamento\\EOLBOEHPC_clusters_2024.pkl', 'rb'))
 modelo_normalizador = load(open('modelo_normalizador.pkl', 'rb'))
@@ -14,7 +50,19 @@ with open('EOLBOEHPC_treinamento\\EOLBOEHPC.csv', 'r') as file:
 data_frame = pd.DataFrame(columns=columns)
 
 # Nova instância
+
 nova_instancia = ["Male", 22, 1.75, 95, "yes", "no", 2, 3, "Sometimes", "no", 3, "no", 3, 2, "no", "Walking", "Obesity_Type_I"]
+
+
+# Iterando pela lista e modificando os elementos
+for i in range(len(nova_instancia)):
+    if isinstance(nova_instancia[i], str) and "_" in nova_instancia[i]:
+        nova_instancia[i] = nova_instancia[i].replace("_", "")
+
+print(nova_instancia)
+
+
+
 nova_instancia_dict = {
     'Gender': nova_instancia[0],
     'Age': nova_instancia[1],
@@ -37,7 +85,7 @@ nova_instancia_dict = {
 
 # Convertendo para DataFrame
 nova_instancia_df = pd.DataFrame([nova_instancia_dict]) #Até aqui ele está inserindo os dados corretamente
-
+print(nova_instancia_df)
 
 # Separar dados numéricos e categóricos
 nova_instancia_numericos = nova_instancia_df.drop(columns=['Gender', 'family_history_with_overweight', 'FAVC', 'CAEC', 'SMOKE', 'SCC', 'CALC', 'MTRANS', 'NObeyesdad'])
@@ -54,8 +102,9 @@ nova_instancia_categoricos = nova_instancia_df[['Gender', 'family_history_with_o
 nova_instancia_numericos_normalizados = modelo_normalizador.transform(nova_instancia_numericos) ##############continua tendo 8 elementos#############
 print(len(nova_instancia_numericos_normalizados[0]))
 # Aplicar one-hot encoding aos dados categóricos
+print(nova_instancia_categoricos)
 nova_instancia_categoricos_normalizados = pd.get_dummies(nova_instancia_categoricos, dtype=int) #Esta aplicando o get dummies corretamente
-print(len(nova_instancia_categoricos_normalizados.columns))
+print(nova_instancia_categoricos_normalizados)
 ############################
 ############################
 pd.set_option('display.max_columns', None)
@@ -83,10 +132,25 @@ pd.set_option('display.max_columns', None)
 
 
 #pega a primeira instancia da tabela
+<<<<<<< Updated upstream
 nova_instancia_final_df = data_frame.iloc[0]
 
 #pega os valores da instancia (esquerda para direita)
 nova_instancia_final_df = nova_instancia_final_df.values
+=======
+instancia_normalizada_do_df_normalizado_organizado = nova_instancia_final_normalizada_ORGANIZADA_df.iloc[0]
+print(instancia_normalizada_do_df_normalizado_organizado)
+#pega os valores da instancia (esquerda para direita)
+valores_instancia_normalizada_do_df_normalizado_organizado = instancia_normalizada_do_df_normalizado_organizado.values
+print(valores_instancia_normalizada_do_df_normalizado_organizado)
+
+#armazena colunas para dar ao centroid futuramente
+ordem_colunas = nova_instancia_final_normalizada_ORGANIZADA_df.columns
+print(ordem_colunas)
+
+#print(len(valores_instancia_normalizada_do_df_normalizado_organizado)) #Possui 38 elementos, ou seja, 38 valores para 38 colunas
+#Contei manualmente as colunas normalizadas em "EOLBOEHPC.csv" e de fato existem 38 colunas após a normalização
+>>>>>>> Stashed changes
 
 
 # nova instancia final em teoria deve estar com PRIMEIRO todos os valores numericos e então todos os valores categoricos
@@ -117,15 +181,42 @@ print("Quantidade de colunas em centroid:", len(centroid.columns))
 
 
 # Atribuir os rótulos do arquivo de treinamento ao centroid
-centroid.columns = columns 
-print(centroid)
+centroid.columns = ordem_colunas
+print(centroid.columns)
 print("Quantidade de colunas em centroid:", len(centroid.columns))
 
 
 # Segmentar o centroid em numéricos e categóricos
 print("##############################################")
+<<<<<<< Updated upstream
 centroid_colunas_numericas = centroid.drop(columns=nova_instancia_categoricos_normalizados)
 print(centroid_colunas_numericas)
+=======
+lista_colunas_categoricas_normalizadas_para_drop_centroid = []
+
+# Iterar sobre as colunas do DataFrame categorico normalizado
+for coluna in nova_instancia_categoricos_normalizados.columns:
+    # Extrair o prefixo da coluna atual
+    prefixo = coluna.split('_')[0]
+    # Filtrar as colunas do DataFrame final normalizado que têm o mesmo prefixo
+    colunas_prefixo = list(filter(lambda x: x.startswith(prefixo), nova_instancia_final_normalizada_ORGANIZADA_df.columns))
+    # Adicionar as colunas encontradas à lista
+    lista_colunas_categoricas_normalizadas_para_drop_centroid.extend(colunas_prefixo)
+    
+print(lista_colunas_categoricas_normalizadas_para_drop_centroid)
+# Remover duplicatas da lista, se houver
+#colunas_categoricas_normalizadas_para_drop_centroid = list(set(lista_colunas_categoricas_normalizadas_para_drop_centroid))
+#print(len(colunas_categoricas_normalizadas_para_drop_centroid))
+
+
+
+centroid_colunas_numericas_normalizadas = centroid.drop(columns=lista_colunas_categoricas_normalizadas_para_drop_centroid)
+print(centroid_colunas_numericas_normalizadas)
+print("----------------------------------------------")
+
+centroid_colunas_categoricas_normalizadas = centroid[lista_colunas_categoricas_normalizadas_para_drop_centroid]
+print(centroid_colunas_categoricas_normalizadas)
+>>>>>>> Stashed changes
 
 print("----------------------------------------------")
 
@@ -133,16 +224,55 @@ centroid_colunas_categoricas = data_frame.drop(columns=nova_instancia_numericos.
 print(centroid_colunas_categoricas)
 print("##############################################")
 
-#3. Centroid_numericos = aplicar o inverse transform
 
+<<<<<<< Updated upstream
 
 #esta dando errado
 centroid_colunas_numericas_desnormalizadas = modelo_normalizador.inverse_transform(centroid_colunas_numericas)
 
 
+=======
+centroid_colunas_numericas_desnormalizadas = modelo_normalizador.inverse_transform(centroid_colunas_numericas_normalizadas)
+print(centroid_colunas_numericas_desnormalizadas)
+>>>>>>> Stashed changes
 
 #4. Centroid_categoricos = aplicar o pd.from_dummies()
 
+print(centroid_colunas_categoricas_normalizadas)
+print("----------------------------------------------")
+#centroid_colunas_categoricas_normalizadas = centroid_colunas_categoricas_normalizadas.round()
+centroid_colunas_categoricas_normalizadas = centroid_colunas_categoricas_normalizadas.applymap(lambda x: 1 if x >= 0.45 else 0)
+centroid_colunas_categoricas_normalizadas = centroid_colunas_categoricas_normalizadas.astype(int)
+print(centroid_colunas_categoricas_normalizadas.iloc[0])
+#centroid_colunas_categoricas_desnormalizadas = pd.from_dummies(centroid_colunas_categoricas_normalizadas)
 
-centroid_colunas_categoricas_desnormalizadas = pd.from_dummies(centroid_colunas_categoricas, sep='_', default_category=None)
+centroid_colunas_categoricas_desnormalizadas = undummify(centroid_colunas_categoricas_normalizadas)
+print("----------------------------------------------")
+
 print(centroid_colunas_categoricas_desnormalizadas)
+
+
+
+nova_instancia_final_normalizada_df = pd.DataFrame(data=centroid_colunas_numericas_desnormalizadas.round(), columns=centroid_colunas_numericas_normalizadas.columns).join(centroid_colunas_categoricas_desnormalizadas)
+
+
+print("----------------------------------------------")
+
+
+print(nova_instancia_final_normalizada_df)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

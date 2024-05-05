@@ -3,6 +3,7 @@ import pandas as pd
 ####################################################################################################################################################
 dados = pd.read_csv('EOLBOEHPC_treinamento\\ObesityDataSet_raw_and_data_sinthetic.csv', sep = ',')
 print(dados.head(5))
+dados = dados.applymap(lambda x: x.replace('_', '') if isinstance(x, str) else x)
 ####################################################################################################################################################
 dados_numericos = dados.drop(columns = ['Gender', 'family_history_with_overweight', 'FAVC', 'CAEC', 'SMOKE', 'SCC', 'CALC', 'MTRANS', 'NObeyesdad'])
 dados_categoricos = dados[['Gender', 'family_history_with_overweight', 'FAVC', 'CAEC', 'SMOKE', 'SCC', 'CALC', 'MTRANS', 'NObeyesdad']]
