@@ -114,6 +114,7 @@ nova_instancia_final_normalizada_df = pd.DataFrame(data=nova_instancia_numericos
 print(len(nova_instancia_final_normalizada_df.columns)) #Possui 17 colunas, ou seja, está juntando corretamente os numericos com os categoricos
 print(nova_instancia_final_normalizada_df)
 
+
 ################################################
 
 #O PROBLEMA ESTÁ AQUI, apos fazer o join em 'nova_instancia_final_normalizada_df', ainda falta as outras colunas dos dados
@@ -122,22 +123,20 @@ print(nova_instancia_final_normalizada_df)
 ################################################
 
 
+# Copiar o DataFrame original para manter a ordem das colunas
+# Alimentar as colunas existentes
+nova_instancia_final_normalizada_ORGANIZADA_df = data_frame.copy()
+nova_instancia_final_normalizada_ORGANIZADA_df[nova_instancia_final_normalizada_df.columns] = nova_instancia_final_normalizada_df
+# Preencher as colunas faltantes com zeros
+print(nova_instancia_final_normalizada_ORGANIZADA_df)
+nova_instancia_final_normalizada_ORGANIZADA_df = nova_instancia_final_normalizada_ORGANIZADA_df.fillna(0)
+print(nova_instancia_final_normalizada_ORGANIZADA_df)
+
 # Troca colunas nulas por 0
-for column in nova_instancia_final_normalizada_df.columns:
-    if column in data_frame.columns:
-        data_frame.loc[0, column] = nova_instancia_final_normalizada_df.loc[0, column]
-data_frame = data_frame.fillna(0)
-pd.set_option('display.max_columns', None)
 
 
 
 #pega a primeira instancia da tabela
-<<<<<<< Updated upstream
-nova_instancia_final_df = data_frame.iloc[0]
-
-#pega os valores da instancia (esquerda para direita)
-nova_instancia_final_df = nova_instancia_final_df.values
-=======
 instancia_normalizada_do_df_normalizado_organizado = nova_instancia_final_normalizada_ORGANIZADA_df.iloc[0]
 print(instancia_normalizada_do_df_normalizado_organizado)
 #pega os valores da instancia (esquerda para direita)
@@ -150,16 +149,15 @@ print(ordem_colunas)
 
 #print(len(valores_instancia_normalizada_do_df_normalizado_organizado)) #Possui 38 elementos, ou seja, 38 valores para 38 colunas
 #Contei manualmente as colunas normalizadas em "EOLBOEHPC.csv" e de fato existem 38 colunas após a normalização
->>>>>>> Stashed changes
 
 
 # nova instancia final em teoria deve estar com PRIMEIRO todos os valores numericos e então todos os valores categoricos
 
 
-print("Indice do grupo do novo entrevistado:",EOLBOEHPC_kmeans_model.predict([nova_instancia_final_df]))
-print("Centroide do entrevistado: ", EOLBOEHPC_kmeans_model.cluster_centers_[EOLBOEHPC_kmeans_model.predict([nova_instancia_final_df])])
+print("Indice do grupo do novo entrevistado:",EOLBOEHPC_kmeans_model.predict([valores_instancia_normalizada_do_df_normalizado_organizado]))
+print("Centroide do entrevistado: ", EOLBOEHPC_kmeans_model.cluster_centers_[EOLBOEHPC_kmeans_model.predict([valores_instancia_normalizada_do_df_normalizado_organizado])])
 
-centroid = pd.DataFrame(EOLBOEHPC_kmeans_model.cluster_centers_[EOLBOEHPC_kmeans_model.predict([nova_instancia_final_df])])
+centroid = pd.DataFrame(EOLBOEHPC_kmeans_model.cluster_centers_[EOLBOEHPC_kmeans_model.predict([valores_instancia_normalizada_do_df_normalizado_organizado])])
 
 
 
@@ -186,12 +184,8 @@ print(centroid.columns)
 print("Quantidade de colunas em centroid:", len(centroid.columns))
 
 
-# Segmentar o centroid em numéricos e categóricos
+# Segmentar o centroid em numéricos e categóricos <---------------------------------------------- problema pode estar aqui
 print("##############################################")
-<<<<<<< Updated upstream
-centroid_colunas_numericas = centroid.drop(columns=nova_instancia_categoricos_normalizados)
-print(centroid_colunas_numericas)
-=======
 lista_colunas_categoricas_normalizadas_para_drop_centroid = []
 
 # Iterar sobre as colunas do DataFrame categorico normalizado
@@ -216,25 +210,13 @@ print("----------------------------------------------")
 
 centroid_colunas_categoricas_normalizadas = centroid[lista_colunas_categoricas_normalizadas_para_drop_centroid]
 print(centroid_colunas_categoricas_normalizadas)
->>>>>>> Stashed changes
 
 print("----------------------------------------------")
-
-centroid_colunas_categoricas = data_frame.drop(columns=nova_instancia_numericos.columns)
-print(centroid_colunas_categoricas)
 print("##############################################")
 
 
-<<<<<<< Updated upstream
-
-#esta dando errado
-centroid_colunas_numericas_desnormalizadas = modelo_normalizador.inverse_transform(centroid_colunas_numericas)
-
-
-=======
 centroid_colunas_numericas_desnormalizadas = modelo_normalizador.inverse_transform(centroid_colunas_numericas_normalizadas)
 print(centroid_colunas_numericas_desnormalizadas)
->>>>>>> Stashed changes
 
 #4. Centroid_categoricos = aplicar o pd.from_dummies()
 
@@ -260,7 +242,7 @@ print("----------------------------------------------")
 
 
 print(nova_instancia_final_normalizada_df)
-
+#
 
 
 
